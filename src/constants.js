@@ -1,5 +1,9 @@
-export const PLAYER_SIZE = 50;
-export const GRAVITY = 0.8;
-export const JUMP_FORCE = -15;
-export const OBSTACLE_WIDTH = 40;
+export const PLAYER_SIZE = 40;
+export const PLAYER_SPEED = 8;
+export const OPPONENT_WIDTH = 40;
+export const OPPONENT_HEIGHT = 80;
+export const BALL_SIZE = 20;
 export const GAME_SPEED = 5;
+export const PITCH_WIDTH = 800;
+export const PITCH_HEIGHT = 500;
+export const GOAL_WIDTH = 100;

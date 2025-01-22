@@ -1,25 +1,31 @@
-# Play the Game
+# Play Football Game
 
 1. **Start the game**
-   - Game automatically begins when page loads
-   - Player character stands on the ground
+   - Game begins automatically when page loads
+   - Player starts at center of football pitch
 
-2. **Jump mechanics**
-   - Press SPACE bar to make the player jump
-   - Player can only jump again when touching the ground
-   - Jump height is determined by physics simulation
+2. **Movement controls**
+   - Use ARROW KEYS to move player
+   - Left/Right arrows move horizontally
+   - Up/Down arrows move vertically
+   - Player stays within pitch boundaries
 
-3. **Avoid obstacles**
-   - Randomly generated obstacles approach from the right
-   - Obstacles move at constant speed
-   - Jump over obstacles to avoid collision
+3. **Avoid opponents**
+   - AI opponents enter from right side
+   - Move left towards player
+   - Avoid contact with opponents
 
 4. **Collision detection**
-   - Game ends immediately on collision
-   - Visual feedback shows game over screen
-   - Score stops updating
+   - Game ends on contact with opponent
+   - Final score displayed
+   - Option to restart game
 
-5. **Restart game**
-   - Press SPACE bar on game over screen to restart
-   - Score resets to zero
-   - Obstacles reset
+5. **Scoring system**
+   - Score increases over time
+   - Bonus points for avoiding opponents
+   - High score persists between sessions
+
+6. **Restart game**
+   - Press SPACE BAR to restart
+   - Returns to initial position
+   - Resets score and opponents

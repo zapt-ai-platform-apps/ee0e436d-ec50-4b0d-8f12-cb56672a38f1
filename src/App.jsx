@@ -1,126 +1,57 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { PLAYER_SIZE, GRAVITY, JUMP_FORCE, OBSTACLE_WIDTH, GAME_SPEED } from './constants';
-import { checkCollision } from './gameUtils';
+import React from 'react';
+import { PITCH_WIDTH, PITCH_HEIGHT, GOAL_WIDTH } from './constants';
+import useGameLogic from './useGameLogic';
 
 export default function App() {
-  const [gameOver, setGameOver] = useState(false);
-  const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [playerPosition, setPlayerPosition] = useState(300);
-  const [playerVelocity, setPlayerVelocity] = useState(0);
-  const [obstacles, setObstacles] = useState([]);
-
-  const resetGame = useCallback(() => {
-    setPlayerPosition(300);
-    setPlayerVelocity(0);
-    setObstacles([]);
-    setScore(0);
-    setGameOver(false);
-    setHighScore(prev => Math.max(prev, score));
-  }, [score]);
-
-  const jump = () => {
-    if (!gameOver && playerPosition === 300) {
-      setPlayerVelocity(JUMP_FORCE);
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        jump();
-      }
-      if (gameOver && e.code === 'Space') {
-        resetGame();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameOver, resetGame]);
-
-  useEffect(() => {
-    if (gameOver) return;
-
-    const gameLoop = () => {
-      let newVelocity = playerVelocity + GRAVITY;
-      let newPosition = playerPosition + newVelocity;
-      
-      if (newPosition > 300) {
-        newPosition = 300;
-        newVelocity = 0;
-      }
-
-      setPlayerPosition(newPosition);
-      setPlayerVelocity(newVelocity);
-
-      const newObstacles = obstacles.map(obstacle => ({
-        ...obstacle,
-        x: obstacle.x - GAME_SPEED
-      })).filter(obstacle => obstacle.x > -OBSTACLE_WIDTH);
-
-      setObstacles(newObstacles);
-
-      if (newObstacles.some(obstacle => checkCollision(obstacle, newPosition))) {
-        setGameOver(true);
-      }
-
-      setScore(prev => prev + 1);
-    };
-
-    const animationFrame = requestAnimationFrame(gameLoop);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [playerPosition, playerVelocity, obstacles, gameOver]);
-
-  useEffect(() => {
-    if (gameOver) return;
-
-    const obstacleInterval = setInterval(() => {
-      setObstacles(prev => [...prev, { x: window.innerWidth, id: Date.now() }]);
-    }, 2000);
-
-    return () => clearInterval(obstacleInterval);
-  }, [gameOver]);
-
-  useEffect(() => {
-    const savedHighScore = localStorage.getItem('highScore');
-    if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('highScore', highScore.toString());
-  }, [highScore]);
+  const {
+    gameOver,
+    score,
+    highScore,
+    playerPos,
+    opponents,
+    resetGame
+  } = useGameLogic();
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-emerald-900 flex flex-col items-center justify-center p-4">
       <div className="mb-4 flex gap-4">
         <div className="text-white text-xl">Score: {score}</div>
         <div className="text-white text-xl">High Score: {highScore}</div>
       </div>
-      
-      <div className="relative w-full h-[400px] overflow-hidden bg-slate-800">
+
+      <div className="relative bg-emerald-700 border-2 border-white" 
+           style={{ width: PITCH_WIDTH, height: PITCH_HEIGHT }}>
+        {/* Player */}
         <div 
-          className="absolute bottom-0 left-[100px] bg-red-500 transition-transform duration-75"
-          style={{ 
-            width: PLAYER_SIZE + 'px',
-            height: PLAYER_SIZE + 'px',
-            transform: `translateY(${-playerPosition}px)`
+          className="absolute bg-blue-500 rounded-full"
+          style={{
+            width: PLAYER_SIZE,
+            height: PLAYER_SIZE,
+            left: playerPos.x,
+            top: playerPos.y,
+            transition: 'left 0.1s, top 0.1s'
           }}
         />
 
-        {obstacles.map(obstacle => (
+        {/* Opponents */}
+        {opponents.map(opponent => (
           <div
-            key={obstacle.id}
-            className="absolute bottom-0 h-[40px] bg-green-500"
+            key={opponent.id}
+            className="absolute bg-red-500 rounded"
             style={{
-              width: OBSTACLE_WIDTH + 'px',
-              left: obstacle.x + 'px'
+              width: opponent.width,
+              height: opponent.height,
+              left: opponent.x,
+              top: opponent.y
             }}
           />
         ))}
+
+        {/* Goals */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-between">
+          <div className="bg-white/20" style={{ width: GOAL_WIDTH, height: 20 }} />
+          <div className="bg-white/20" style={{ width: GOAL_WIDTH, height: 20 }} />
+        </div>
 
         {gameOver && (
           <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center">

@@ -1,18 +1,10 @@
-import { PLAYER_SIZE, OBSTACLE_WIDTH } from './constants';
+import { PLAYER_SIZE, OPPONENT_WIDTH, PITCH_WIDTH } from './constants';
 
-export const checkCollision = (obstacle, playerPosition) => {
-  const playerLeft = 100;
-  const playerRight = 100 + PLAYER_SIZE;
-  const playerTop = playerPosition;
-  const playerBottom = playerPosition + PLAYER_SIZE;
-
-  const obstacleLeft = obstacle.x;
-  const obstacleRight = obstacle.x + OBSTACLE_WIDTH;
-  const obstacleTop = 300;
-  const obstacleBottom = 300 + 40;
-
-  return !(playerRight < obstacleLeft || 
-          playerLeft > obstacleRight || 
-          playerBottom < obstacleTop || 
-          playerTop > obstacleBottom);
+export const checkCollision = (entity1, entity2) => {
+  return !(entity1.x > entity2.x + entity2.width || 
+          entity1.x + entity1.width < entity2.x || 
+          entity1.y > entity2.y + entity2.height || 
+          entity1.y + entity1.height < entity2.y);
 };
+
+export const getRandomPosition = (max) => Math.random() * max;
